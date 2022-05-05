@@ -1,0 +1,31 @@
+pip install pipenv
+
+python -m pip install --upgrade pip
+
+配置环境变量：WORKON_HOME 
+
+pip install django==2.2
+
+django-admin startproject lgshop
+
+
+python manage.py runserver
+
+python manage.py startapp app
+
+
+python manage.py makemigrations
+
+
+python manage.py migrate
+
+
+python manage.py migrate --fake
+
+python install -r requirements.txt
+
+scrapy startproject xxx
+
+scrapy genspider quotes quotes.toscrape.com
+
+scrapy crawl quotes
