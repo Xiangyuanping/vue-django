@@ -1,6 +1,2 @@
 django==2.2
 mysqlclient
-weibo
-lxml
-beautifulsoup4
-scrapy

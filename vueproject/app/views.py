@@ -5,9 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from app.models import User
 import json
-import weibo
 import requests
-from bs4 import BeautifulSoup
 
 
 def index(request):

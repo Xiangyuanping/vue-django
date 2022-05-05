@@ -1,10 +1,19 @@
 pip install pipenv
 
+pipenv install
+
+pipenv install --three
+
+python -m venv env
+
 python -m pip install --upgrade pip
 
-配置环境变量：WORKON_HOME 
+配置环境变量：WORKON_HOME  D:\env -- 存放虚拟环境的地址
 
-pip install django==2.2
+pip install django==2.2.5 -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/
+
+pip install pymysql
+
 
 django-admin startproject lgshop
 
