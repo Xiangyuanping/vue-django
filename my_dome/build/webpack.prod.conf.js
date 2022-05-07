@@ -23,7 +23,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       usePostCSS: true
     })
   },
-  devtool: config.build.productionSourceMap ? config.build.devtool : false,
+  devtool: config.dev.devtool, //config.build.productionSourceMap ? config.build.devtool : false,
   output: {
     path: config.build.assetsRoot,
     filename: utils.assetsPath('js/[name].[chunkhash].js'),
@@ -37,7 +37,9 @@ const webpackConfig = merge(baseWebpackConfig, {
     new UglifyJsPlugin({
       uglifyOptions: {
         compress: {
-          warnings: false
+          warnings: false,
+          drop_debugger: false,
+          drop_console: false
         }
       },
       sourceMap: config.build.productionSourceMap,

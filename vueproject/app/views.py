@@ -67,3 +67,10 @@ def request(request):
     print(data)
 
     return HttpResponse(data)
+
+def alllist(request):
+    url = "http://89.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=4962&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048"
+    data = requests.get(url) 
+    print(data)
+
+    return HttpResponse(data)

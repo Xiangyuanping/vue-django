@@ -7,5 +7,6 @@ urlpatterns=[
     path('addUser/', views.addUser),
     path('api/seeUser/', views.seeUser),
     path('request', views.request),
-    path('userlist', views.userlist)
+    path('userlist', views.userlist),
+    path('alllist', views.alllist)
 ]
