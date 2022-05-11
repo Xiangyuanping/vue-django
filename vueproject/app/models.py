@@ -7,7 +7,6 @@ class User(models.Model):
     Address=models.CharField(max_length=200)
 
 class Gpxx(models.Model):
-    id = models.AutoField(primary_key=True)
     f1 = models.CharField(max_length=200)
     f2 = models.CharField(max_length=200)
     f3 = models.CharField(max_length=200)
