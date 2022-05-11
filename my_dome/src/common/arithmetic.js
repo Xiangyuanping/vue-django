@@ -6,7 +6,6 @@ class Arithmetic {
   static cssz = 0;  //初始市值
   static csbj = 0;  //初始补仓本金
   static getData = (zfl, origMy, jczj, bl, myArr, ysgj, successCallback) => {
-    console.log(zfl, origMy, jczj, bl, myArr, ysgj);
     Arithmetic.rszzj = origMy + jczj
     Arithmetic.csbj = jczj
     let gpsl = Arithmetic.gpslInt(origMy, ysgj);  //股票数量
@@ -29,9 +28,9 @@ class Arithmetic {
     let receNum = 0;
     origMy = ysgj * gpsl   //前一天的持仓金额
     Arithmetic.cssz = origMy  //初始市值
-    let three = Math.round(origMy * 3) / 100
-    let six = Math.round(origMy * 6) / 100
-    let nine = Math.round(origMy * 9) / 100
+    let three = Math.round(Arithmetic.cssz * 3) / 100
+    let six = Math.round(Arithmetic.cssz * 6) / 100
+    let nine = Math.round(Arithmetic.cssz * 9) / 100
 
     let fthree = -Math.round(Arithmetic.cssz * 3) / 100
     let fsix = -Math.round(Arithmetic.cssz * 6) / 100
@@ -41,22 +40,22 @@ class Arithmetic {
     jczj = jczj - Arithmetic.sfjs(true, ysgj * gpsl) + (Arithmetic.csbj - origMy); //现有补仓资金
     let zfjx = Math.round(origMy * zfl) / 100;  //加建仓价格
     let zflj = 0;  //当天浮动资金
-
+    debugger
     for (let i = 0; i <= myArr.length - 1; i++) {
       if (gpsl > 0) {
         // console.log(ysgj);
         zflj += Math.round(origMy * (myArr[i])) / 100
         if (zflj > 0) {
-          if (three <= zflj && zflj < six) {
-            gmsl = 100
-          } else if (six <= zflj && zflj < nine) {
-            gmsl = 200
-          } else if (zflj >= nine) {
+          if(three <= zflj && zflj < six){
+             gmsl = 100
+          }else if(six <= zflj && zflj < nine){
+             gmsl = 200
+          }else if(zflj >= nine) {
             gmsl = 300
-          } else {
+          }else {
             gmsl = 0
           }
-          if (gmsl > 0) {
+          if(gmsl > 0){
             if (gmsl > gpsl) {
               gmsl = gpsl
             }
@@ -71,16 +70,16 @@ class Arithmetic {
             gmsl = 0
           }
         } else if (zflj < 0) {
-          if (fthree >= zflj && zflj >= fsix) {
+          if(fthree >= zflj &&  zflj >= fsix){
             gmsl = 100
-          } else if (fsix >= zflj && zflj >= fnine) {
+          }else if(fsix >= zflj && zflj >= fnine){
             gmsl = 200
-          } else if (zflj <= fnine) {
+          }else if(zflj <= fnine) {
             gmsl = 300
-          } else {
+          }else {
             gmsl = 0
           }
-          if (gmsl > 0 && Math.round((jczj - ysgj * gmsl - Arithmetic.sfjs(true, ysgj * gpsl)) * 100) / 100 > Arithmetic.cssz / 2) {
+          if(gmsl > 0 && Math.round((jczj - ysgj * gmsl - Arithmetic.sfjs(true, ysgj * gpsl)) * 100) / 100 > Arithmetic.cssz / 3){
             insrNum += Math.round((ysgj * gmsl) * 100) / 100
             gpsl = gpsl + Number(gmsl);
             //console.log(gpsl)
@@ -88,7 +87,7 @@ class Arithmetic {
             jczj = Math.round((jczj - ysgj * gmsl - Arithmetic.sfjs(true, ysgj * gpsl)) * 100) / 100;  //当天补仓资金结余
             sxf = Arithmetic.sfjs(false, ysgj * gmsl);  //手续费计算
             payOff = -ysgj * gmsl//计算当天补仓金额
-            zfjx = Math.round(origMy * zfl) / 100;
+            zfjx = Math.round(origMy *  zfl) / 100;
             zflj = 0
             gmsl = 0
           }

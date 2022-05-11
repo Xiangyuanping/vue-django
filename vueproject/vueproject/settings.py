@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'vueproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE':  'django.db.backends.mysql', # 数据库引擎 'django.db.backends.sqlite3', # 
-        'NAME':  'django_mysql', # 数据库名 os.path.join(BASE_DIR,'db.sqlite3') #
+        'NAME': 'django_mysql', # 数据库名  os.path.join(BASE_DIR,'db.sqlite3') #
         'USER': 'root', # 账号
         'PASSWORD': '123456', # 密码
         'HOST': '127.0.0.1', # HOST
