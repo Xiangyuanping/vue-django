@@ -22,11 +22,10 @@ python manage.py runserver
 
 python manage.py startapp app
 
-
-python manage.py makemigrations
-
-
-python manage.py migrate
+一、 新建数据库
+    1、models.py --新建表
+    2、python manage.py makemigrations
+    3、python manage.py migrate
 
 
 python manage.py migrate --fake

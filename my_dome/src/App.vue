@@ -5,32 +5,9 @@
       <el-main>
         <div class="main-c">
           <el-form :inline="true" ref="form" :model="form" label-width="80px">
-            <el-select
-              v-model="form.mcsl"
-              @change="userlist()"
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-            <el-select
-              v-model="form.gmsl"
-              @change="userlist()"
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
+            <el-form-item label="初始日期">
+              <el-date-picker v-model="initTime" type="date" @change="inTime()"/>
+            </el-form-item>
             <el-form-item label="涨幅界限">
               <el-input v-model="form.zfl" @change="userlist()"></el-input>
             </el-form-item>
@@ -137,19 +114,17 @@
     name: 'index',
     data () {
       return {
+        initTime: '2022-03-01',
         gplist: [],
         tssl: [],
         dkjl: 0,  //多空交量结果
         options: [],
         form: {
           day: 30,
-          mcsl: 100,
-          gmsl: 300,
-          zfl: 0,
-          origMy: 10000,
-          jczj: 10000,
-          name: '中国电建',
-          date: ['2022-01-01', '2022-02-01'],
+          origMy: 19410,
+          jczj: 19410,
+          name: '美利云',
+          date: ['2022-03-17', '2022-04-26'],
           resource: ''
         },
         data: {
@@ -175,7 +150,6 @@
         yDataArr: [],  //成交量
         gjdf: 0,  //股价跌幅
         zfArr: [],
-        zflArr: [],
         timejy: []
       }
     },
@@ -213,6 +187,10 @@
             }
           ):''
         }
+      },
+      inTime(){
+        this.form.date = [this.initTime, new Date()]
+        this.userlist()
       },
       setDate () {
         let { gpslArr, zzcArr, xzgj, everyBcArr, bcArr, jczjArr, sxfArr } = this.data
@@ -258,21 +236,18 @@
             data: sxfArr
           }
         ])
-        Arithmetic.echartsSvg(this.$echarts.init(document.getElementById('jym')),['#a71894', '#f7009e'], '交易系统', this.timejy, [
+        Arithmetic.echartsSvg(this.$echarts.init(document.getElementById('jym')),['#a71894'], '交易系统', this.timejy, [
           {
             name: '最佳买入点',
             type: 'line',
             data: this.zfArr,
-          },
-          {
-            name: '涨幅界限',
-            type: 'line',
-            data: this.zflArr,
           }
         ])
       },
       userlist () {
-        this
+         this.form.day = parseInt(new Date(this.form.date[0]).getTime() /24 /60 /60/1000) - parseInt(new Date(this.initTime).getTime() /24 /60 /60/1000)
+        // this.form.date = [this.initTime, new Date()]
+         //this.initTime ? this.form.day = this.form.day + (parseInt(new Date(this.form.date[0]).getTime() /24 /60 /60/1000) - parseInt(new Date(this.initTime).getTime() /24 /60 /60/1000)) : ''
         const loading = this.$loading({
           lock: true,
           text: '获取' + this.form.name + '股票信息中...',
@@ -300,7 +275,6 @@
         let nValue = [];
         let myArr = [];
         this.zfArr = [];
-        this.zflArr = []
         this.timejy = []
         let ysgj = 0;
         let eight = 8 * 60 * 60 * 1000
@@ -326,18 +300,15 @@
           let z = 0;
           let pjl = 0
           let u = 0;
-          let zfl = 0;
            console.log(nValue);
           // console.log(this.timejy)
           for (let w = 0; w <= nValue.length - 1; w++) {
             let kstime = new Date(nValue[w][0]).getTime()
             if (sjq - jgsj <= kstime && sjq > kstime) {
               //console.log(w)
-              zfh += Math.abs(Math.round(Number(nValue[w][8]) * 100) / 100)
-              zfl = Math.round(Math.abs(Math.round(Number(nValue[w][8]) * 100) / 100) / (w + 1) * 100) / 100
+              zfh = Math.abs(Math.round(Number(nValue[w][8]) * 100) / 100)
               z += Math.round(Number(nValue[w][8]) * 100) / 100
               this.zfArr.push(Math.round(z * 100) / 100)
-              this.zflArr.push(zfl)
               u++
             } else {
               this.time.push(nValue[w][0])
@@ -360,13 +331,13 @@
               yDataArr.push(Math.round(zxValue[j][5]));
             }
             this.yDataArr = yDataArr;
-            
+
             console.log(nValue.length - zxValue.length, zfh);
             pjl = nValue.length - zxValue.length;
             let zfje = Math.round(zfh / pjl * 100) / 100
-            this.form.zfl = zfje
+            //this.form.zfl = 6
             let bj = ysgj * 1000;
-            Arithmetic.getData(this.form.mcsl, this.form.gmsl, this.form.zfl, Number(this.form.origMy), Number(this.form.jczj), 1, myArr, ysgj, (zzc, jczj, origMy, gpsl, ccyk, incsRo, ysgj, sxfzh, gpslArr, zzcArr, xzgj, everyBcArr, bcArr, jczjArr, sxfArr) => {
+            Arithmetic.getData(this.form.zfl, Number(this.form.origMy), Number(this.form.jczj), 1, myArr, ysgj, (zzc, jczj, origMy, gpsl, ccyk, incsRo, ysgj, sxfzh, gpslArr, zzcArr, xzgj, everyBcArr, bcArr, jczjArr, sxfArr) => {
                 let arr = [zzc, jczj, origMy, gpsl, ccyk, incsRo, ysgj, sxfzh, gpslArr, zzcArr, xzgj, everyBcArr, bcArr, jczjArr, sxfArr]
                 let i = 0
                 for (const key in this.data) {
