@@ -36,4 +36,22 @@ class Gpxx(models.Model):
     f27 = models.CharField(max_length=200)
     f28 = models.CharField(max_length=200)
     f29 = models.CharField(max_length=200)
+
+
+
+class gp_list(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=200)
+    dm = models.CharField(max_length=200)
+    sj = models.CharField(max_length=200)
+    kp = models.CharField(max_length=200)
+    sp = models.CharField(max_length=200)
+    zg = models.CharField(max_length=200)
+    zd = models.CharField(max_length=200)
+    cjl = models.CharField(max_length=200)
+    cle = models.CharField(max_length=200)
+    zf = models.CharField(max_length=200)
+    zdf = models.CharField(max_length=200)
+    zdje = models.CharField(max_length=200)
+    hs = models.CharField(max_length=200)
     

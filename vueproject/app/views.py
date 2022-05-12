@@ -4,7 +4,7 @@ from re import T
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import render
-from app.models import User, Gpxx
+from app.models import User, Gpxx, gp_list
 import json
 import requests
 
@@ -24,10 +24,10 @@ def addUser(request):
     return render(request,'index.html',context)
 
 def gpdel(_self_):
-    for i in range(7913, 15000):
+    for i in range(1, 1500000):
             #如果id不为空，获取该字段，并将其删除，我们只删除Gpxx表，publisher表不变
             try:
-                gp_obj =Gpxx.objects.get(id=i)
+                gp_obj =gp_list.objects.get(id=i)
                 gp_obj.delete()
             except:
                 pass
@@ -77,8 +77,10 @@ def gplist(_self_):
 
 def lookGp(_self_):
     result = Gpxx.objects.all()
-    arr = [1,2,3,'qwqw']
+    arr = []
     for i in result:
+        print()
+        request(i.f13, i.f12)
         arr.append(i.f12)
     print(arr)
     return HttpResponse(1111)
@@ -117,17 +119,55 @@ def userlist(request):
 
     return HttpResponse(data)
 
-def request(request):
-    name = request.GET.get("name")
-    type = request.GET.get("type")
+def request(lx, dm):
     url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3%,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=type.name&beg=0&end=20500000&_=1651275671129"
-    url = url.replace("name",name)
-    url = url.replace("type",type)
-    print(name,type)
-    data = requests.get(url) 
+    gpmc = ''
+    gpdm = ''
+    gpArr = []
+    url = url.replace("name",dm)
+    url = url.replace("type",lx)
+    data = requests.get(url).json()
+    print(url)
     print(data)
-
+    gpmc =  data['data']['name']
+    gpdm =  data['data']['code']
+    print(gpmc, gpdm)
+    for i in data['data']['klines']:
+        print(i)
+        sj = i.split(',')
+        gpArr.append(
+                gp_list ( 
+                    name = gpmc,
+                    dm = gpdm,
+                    sj = sj[0],
+                    kp = sj[1],
+                    sp = sj[2],
+                    zg = sj[3],
+                    zd = sj[4],
+                    cjl = sj[5],
+                    cle = sj[6],
+                    zf = sj[7],
+                    zdf = sj[8],
+                    zdje = sj[9],
+                    hs = sj[10]
+                )
+        )
+    gp_list.objects.bulk_create(gpArr)
+    print(url)
     return HttpResponse(data)
+        
+        
+def ggxx(request):
+        url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3%,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=type.name&beg=0&end=20500000&_=1651275671129"
+
+        name = request.GET.get("name")
+        type = request.GET.get("type")
+        url = url.replace("name",name)
+        url = url.replace("type",type)
+        data = requests.get(url);
+        print(url);
+        print(name,type);
+        return HttpResponse(data)       
 
 def alllist(request):
     url = "http://89.push2.eastmoney.com/api/qt/clist/get?pn=1&pz=4962&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048"
