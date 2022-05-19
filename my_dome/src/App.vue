@@ -6,7 +6,11 @@
         <div class="main-c">
           <el-form :inline="true" ref="form" :model="form" label-width="80px">
             <el-form-item label="初始日期">
-              <el-date-picker v-model="initTime" type="date" @change="inTime()"/>
+              <el-date-picker
+                v-model="initTime"
+                type="date"
+                @change="inTime()"
+              />
             </el-form-item>
             <el-form-item label="涨幅界限">
               <el-input v-model="form.zfl" @change="userlist()"></el-input>
@@ -34,16 +38,22 @@
               <el-input v-model="form.jczj"></el-input>
             </el-form-item>
             <el-form-item label="名称">
-              <el-select v-model="form.name" filterable placeholder="请选择" @change="userlist()">
+              <el-select
+                v-model="form.name"
+                filterable
+                placeholder="请选择"
+                @change="userlist()"
+              >
                 <el-option
                   v-for="item in gplist"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
+                  :value="item.value"
+                >
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="时间区间" >
+            <el-form-item label="时间区间">
               <el-date-picker
                 v-model="form.date"
                 @change="userlist()"
@@ -69,37 +79,43 @@
           <el-descriptions title="统计信息">
             <el-descriptions-item label="总资金">{{
               data.zzc
-              }}</el-descriptions-item>
+            }}</el-descriptions-item>
             <el-descriptions-item label="补仓本金">{{
               data.jczj
-              }}</el-descriptions-item>
+            }}</el-descriptions-item>
             <el-descriptions-item label="持仓市值">{{
               data.origMy
-              }}</el-descriptions-item>
+            }}</el-descriptions-item>
             <el-descriptions-item label="持仓股数量">{{
               data.gpsl
-              }}</el-descriptions-item>
+            }}</el-descriptions-item>
             <el-descriptions-item label="盈亏额">{{
               data.ccyk
-              }}</el-descriptions-item>
+            }}</el-descriptions-item>
             <el-descriptions-item label="盈亏比例"
-            >{{ data.incsRo || 0 }}%</el-descriptions-item
+              >{{ data.incsRo || 0 }}%</el-descriptions-item
             >
             <el-descriptions-item label="收盘股价">{{
               data.ysgj
-              }}</el-descriptions-item>
+            }}</el-descriptions-item>
             <el-descriptions-item label="手续费总和">{{
               data.sxfzh
-              }}</el-descriptions-item>
+            }}</el-descriptions-item>
             <el-descriptions-item label="现有股价跌幅"
-            >{{ gjdf || 0 }}%</el-descriptions-item
+              >{{ gjdf || 0 }}%</el-descriptions-item
             >
             <el-descriptions-item label="多空交量结果"
-            >{{ dkjl || 0 }}%</el-descriptions-item
+              >{{ dkjl || 0 }}%</el-descriptions-item
             >
           </el-descriptions>
-          <div style="width: 1200px; height: 400px; margin: 30px auto" id="main"></div>
-          <div style="width: 1200px; height: 400px; margin: 30px auto" id="jym"></div>
+          <div
+            style="width: 1200px; height: 400px; margin: 30px auto"
+            id="main"
+          ></div>
+          <div
+            style="width: 1200px; height: 400px; margin: 30px auto"
+            id="jym"
+          ></div>
         </div>
       </el-main>
     </el-container>
@@ -124,7 +140,7 @@
           origMy: 19410,
           jczj: 19410,
           name: '美利云',
-          date: ['2022-03-17', '2022-04-26'],
+          date: ['2022-01-01', '2022-05-17'],
           resource: ''
         },
         data: {
@@ -155,7 +171,7 @@
     },
     mounted () {
       this.init()
-      this.userlist()
+      //this.userlist()
     },
     methods: {
       init () {
@@ -171,9 +187,12 @@
           this.gplist = res.data.data.diff.map(item=>{
             return {
               value: item.f12,
-              label: item.f14
+              label: item.f14,
+              market: item.f13
             }
           })
+          console.log(this.gplist);
+          this.pjz()
         })
         for (let i = 1; i <= 1000; i++) {
           this.tssl.push({
@@ -260,8 +279,63 @@
           let value = res.data.QuotationCodeTable.Data[0]
           this.ueserlist = value;
           this.form.resource = value.MktNum
+          this
           this.onSubmit()
         })
+      },
+      pjz(){
+        let code = '';
+        let market = ''
+        let sjq = new Date(this.form.date[0]).getTime()
+        let sjz = new Date(this.form.date[1]).getTime()
+        
+        let nnArr = []
+        const loading1 = this.$loading({
+          lock: true,
+          text:  '获取' + this.form.name + '股票历年信息中...',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+       
+        this.gplist.map(item=>{
+           const url = 'http://127.0.0.1:8000/app/request?name=' + item.value + '&type=' + item.market
+        let nValue = []
+        this.$http.get(url).then((res) => {
+          loading1.close()
+          let value = res.data.data.klines
+          value = value.map(j => {
+            return j.split(',');
+          })
+          for (let i = 0; i <= value.length - 1; i++) {
+            if (sjq <= new Date(value[i][0]).getTime() && sjz >= new Date(value[i][0]).getTime()) {
+              nValue.push(value[i]);
+            }
+          }
+          
+         !!nValue[0] ? nnArr.push(
+                {
+                  name: item.label,
+                  first: nValue[0][2],
+                  last: nValue[nValue.length -1][2],
+                  zf:Math.round( (nValue[nValue.length -1][2] -  nValue[0][2])/ nValue[0][2] *100 ) / 100 * 100
+                }
+              ) : ''
+              })
+        })
+        var max;
+　　　　　　　//遍历数组，默认arr中的某一个元素为最大值，进行逐一比较
+            for(var w=0; w<nnArr.length; w++){
+　　　　　　　　　　//外层循环一次，就拿arr[i] 和 内层循环arr.legend次的 arr[j] 做对比
+                for(var j=w; j<nnArr.length; j++){
+                    if(nnArr[w].zf<nnArr[j].zf){
+                        //如果arr[j]大就把此时的值赋值给最大值变量max
+　　　　　　　　　　　　　　 max=nnArr[j];
+                        nnArr[j]=nnArr[w];
+                        nnArr[w]=max;
+                    }
+                }
+            }
+        console.log(nnArr);
       },
       onSubmit () {
         this.time = [];
@@ -356,20 +430,20 @@
 </script>
 
 <style scoped>
-  #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    width: 1600px;
-    margin: 0 auto;
-  }
-  .main-c {
-    width: 1200px;
-    margin: 0 auto;
-  }
-  table tr td {
-    border: 1px solid red;
-  }
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  width: 1600px;
+  margin: 0 auto;
+}
+.main-c {
+  width: 1200px;
+  margin: 0 auto;
+}
+table tr td {
+  border: 1px solid red;
+}
 </style>
