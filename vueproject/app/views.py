@@ -7,7 +7,7 @@ from django.shortcuts import render
 from app.models import User, Gpxx, gp_list
 import json
 import requests
-import datetime
+import datetime, time
 
 
 def index(request):
@@ -190,12 +190,13 @@ def test():
     #   print(d)
 
 
-    result = gp_list.objects.filter(sj__year = '2022')
-    arr = []
-    for i in result:
-        content = {'name': i.name, 'dm': i.dm, 'sj': i.sj.__format__('%Y-%m-%d'), 'sp': i.sp}
-        arr.append(content)
-        print(arr)
+    # result = gp_list.objects.filter(sj__year = '2022')
+    # arr = []
+    # for i in result:
+    #     content = {'name': i.name, 'dm': i.dm, 'sj': i.sj.__format__('%Y-%m-%d'), 'sp': i.sp}
+    #     arr.append(content)
+    #     print(arr)
 
+    print(time.strptime('2022-12-12', "%Y-%m-%d") > time.strptime('2022-12-13', "%Y-%m-%d"))
 
-# test()
+test()
